@@ -1,0 +1,148 @@
+/* ========================================
+   TOTE - Onboarding Styles
+   ======================================== */
+
+.onboarding-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: var(--surface-main);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(64px) saturate(2);
+}
+
+.onboarding-canvas {
+    width: 100%;
+    max-width: 600px;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+    animation: onboarding-fade-in 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes onboarding-fade-in {
+    from {
+        opacity: 0;
+        transform: scale(0.98);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.onboarding-header {
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.onboarding-title {
+    font-size: 40px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text-strong);
+    margin: 0;
+}
+
+.onboarding-subtitle {
+    font-size: 18px;
+    color: var(--text-muted);
+    margin: 0;
+    max-width: 400px;
+    margin-inline: auto;
+}
+
+.onboarding-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.onboarding-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 20px;
+    border-radius: 20px;
+    background: transparent;
+    border: 1.5px solid var(--border-subtle);
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.onboarding-item:hover {
+    background: var(--surface-hover);
+    border-color: var(--border-quiet);
+    transform: translateY(-4px);
+}
+
+.onboarding-item.selected {
+    background: var(--surface-active);
+    border-color: var(--border-accent);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+}
+
+.onboarding-item-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.onboarding-item.selected .onboarding-item-icon {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.onboarding-item-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text-muted);
+}
+
+.onboarding-item.selected .onboarding-item-name {
+    color: var(--text-strong);
+}
+
+.onboarding-footer {
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.onboarding-next-button {
+    width: 64px;
+    height: 64px;
+    border-radius: 999px;
+    background: var(--surface-active);
+    color: var(--text-strong);
+    border: 1px solid var(--border-accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.onboarding-next-button:hover {
+    transform: scale(1.1);
+    background: var(--surface-card-strong);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.25);
+}
+
+.onboarding-next-button:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}

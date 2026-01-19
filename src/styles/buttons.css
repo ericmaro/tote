@@ -1,0 +1,241 @@
+/* ========================================
+   TOTE - Button Styles
+   ======================================== */
+
+/* Base Button */
+button {
+    font-family: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    padding: 0;
+    color: inherit;
+}
+
+/* Icon Button */
+.icon-button {
+    padding: 6px;
+    border-radius: 8px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    transition: all 0.15s ease;
+}
+
+.icon-button:hover {
+    background: var(--surface-control-hover);
+    color: var(--text-strong);
+}
+
+.icon-button.active {
+    background: var(--surface-active);
+    color: var(--text-strong);
+}
+
+.icon-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Primary Button */
+.button-primary {
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--border-accent);
+    color: var(--text-strong);
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.button-primary:hover {
+    background: rgba(100, 200, 255, 0.8);
+    transform: translateY(-1px);
+}
+
+.button-primary:active {
+    transform: translateY(0);
+}
+
+/* Secondary Button */
+.button-secondary {
+    padding: 8px 16px;
+    border-radius: 8px;
+    background: var(--surface-control);
+    border: 1px solid var(--border-strong);
+    color: var(--text-strong);
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.button-secondary:hover {
+    background: var(--surface-control-hover);
+    border-color: var(--border-stronger);
+}
+
+/* Ghost Button */
+.button-ghost {
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 13px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.button-ghost:hover {
+    background: var(--surface-hover);
+    color: var(--text-strong);
+}
+
+/* Small Button */
+.button-sm {
+    padding: 4px 10px;
+    font-size: 12px;
+    border-radius: 6px;
+}
+
+/* Pill Button */
+.button-pill {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface-card-muted);
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.button-pill:hover {
+    background: var(--surface-card-strong);
+    color: var(--text-strong);
+    border-color: var(--border-stronger);
+}
+
+/* Toggle Button Group */
+.toggle-group {
+    display: inline-flex;
+    border-radius: 8px;
+    background: var(--surface-control);
+    border: 1px solid var(--border-subtle);
+    padding: 2px;
+    gap: 2px;
+}
+
+.toggle-button {
+    padding: 6px 12px;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.15s ease;
+}
+
+.toggle-button:hover {
+    color: var(--text-strong);
+}
+
+.toggle-button.active {
+    background: var(--surface-card-strong);
+    color: var(--text-strong);
+}
+
+/* Action Button (Header actions) */
+.action-button {
+    padding: 6px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-strong);
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: all 0.15s ease;
+}
+
+.action-button:hover {
+    background: var(--surface-control-hover);
+    color: var(--text-strong);
+    border-color: var(--border-stronger);
+}
+
+.action-button svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    min-width: 160px;
+    padding: 6px;
+    border-radius: 12px;
+    background: var(--surface-popover);
+    border: 1px solid var(--border-muted);
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.3);
+    z-index: 100;
+}
+
+.dropdown-item {
+    width: 100%;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text-muted);
+    font-size: 13px;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.15s ease;
+}
+
+.dropdown-item:hover {
+    background: var(--surface-hover);
+    color: var(--text-strong);
+}
+
+.dropdown-item svg {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}
+
+/* Separator */
+.dropdown-separator {
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 4px 0;
+}
+/* Animations */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
