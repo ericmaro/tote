@@ -9,7 +9,6 @@ import { useLinks } from "../hooks/use-links";
 import { useCategories } from "../hooks/use-categories";
 import { LinkCard } from "../components/LinkCard.tsx";
 import { AddLinkButton } from "../components/AddLinkButton.tsx";
-import { RefetchPreviewsButton } from "../components/RefetchPreviewsButton.tsx";
 import { InboxIcon } from "../components/Icons.tsx";
 
 function CategoryIcon({ icon, color, size = 18 }: { icon: string; color: string; size?: number }) {
@@ -95,7 +94,6 @@ function CategoryPage() {
                     )}
                 </div>
                 <div className="main-topbar-right">
-                    <RefetchPreviewsButton linkIds={filteredLinks.map(l => l.id)} />
                     <AddLinkButton categoryId={categoryId} />
                 </div>
             </header>

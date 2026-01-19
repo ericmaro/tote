@@ -84,13 +84,16 @@
 .tag-filter-bar {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     padding: 0 4px;
     overflow-x: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
     flex: 1;
     min-width: 0;
+    margin-right: 20px;
+    -webkit-mask-image: linear-gradient(to right, black calc(100% - 20px), transparent 100%);
+    mask-image: linear-gradient(to right, black calc(100% - 20px), transparent 100%);
 }
 
 .tag-filter-divider {
@@ -104,7 +107,7 @@
 .tag-filter-item {
     font-size: 11px;
     font-weight: 500;
-    padding: 3px 10px;
+    padding: 2px 8px;
     background: var(--surface-control);
     border: 1px solid var(--border-muted);
     border-radius: 20px;

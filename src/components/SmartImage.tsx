@@ -63,9 +63,7 @@ export function SmartImage({
         const isLocalPath = source.startsWith("/") || (source.includes(":\\") && !source.includes("://"));
 
         if (isLocalPath) {
-            const converted = convertFileSrc(source);
-            console.log(`SmartImage: Converted local path "${source}" to "${converted}"`);
-            return converted;
+            return convertFileSrc(source);
         }
         return source;
     };

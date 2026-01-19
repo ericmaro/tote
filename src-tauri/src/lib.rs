@@ -16,6 +16,10 @@ pub struct LinkMetadata {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct CacheResult {
+    pub title: String,
+    pub description: Option<String>,
+    pub icon: Option<String>,
+    pub image: Option<String>,
     pub content_path: String,
     pub icon_path: Option<String>,
     pub image_path: Option<String>,
@@ -40,75 +44,7 @@ async fn fetch_link_metadata(url: String) -> Result<LinkMetadata, String> {
         .await
         .map_err(|e| format!("Failed to read response: {}", e))?;
 
-    let (title, description, icon, image) = {
-        let document = Html::parse_document(&html);
-
-        // Parse the base URL for resolving relative URLs
-        let base_url = url::Url::parse(&url).ok();
-
-        // Helper to resolve relative URLs
-        let resolve_url = |href: &str| -> Option<String> {
-            if href.starts_with("http") {
-                Some(href.to_string())
-            } else if let Some(base) = &base_url {
-                base.join(href).ok().map(|u| u.to_string())
-            } else {
-                None
-            }
-        };
-
-        // Title: og:title > title tag
-        let title = get_meta_content(&document, "og:title")
-            .or_else(|| get_meta_content(&document, "twitter:title"))
-            .or_else(|| {
-                let selector = Selector::parse("title").ok()?;
-                document
-                    .select(&selector)
-                    .next()?
-                    .text()
-                    .collect::<String>()
-                    .into()
-            })
-            .unwrap_or_else(|| {
-                base_url
-                    .as_ref()
-                    .map(|u| u.host_str().unwrap_or("Unknown").to_string())
-                    .unwrap_or_else(|| "Unknown".to_string())
-            });
-
-        // Description: og:description > description meta
-        let description = get_meta_content(&document, "og:description")
-            .or_else(|| get_meta_content(&document, "twitter:description"))
-            .or_else(|| get_meta_name_content(&document, "description"));
-
-        // Image: og:image > twitter:image
-        let image = get_meta_content(&document, "og:image")
-            .or_else(|| get_meta_content(&document, "twitter:image"))
-            .and_then(|src| resolve_url(&src));
-
-        // Icon: apple-touch-icon > icon link > favicon
-        let icon = get_link_href(&document, "apple-touch-icon")
-            .or_else(|| get_link_href(&document, "icon"))
-            .or_else(|| get_link_href(&document, "shortcut icon"))
-            .and_then(|href| resolve_url(&href))
-            .or_else(|| {
-                // Fallback to /favicon.ico
-                base_url.as_ref().map(|u| {
-                    format!(
-                        "{}://{}/favicon.ico",
-                        u.scheme(),
-                        u.host_str().unwrap_or("")
-                    )
-                })
-            });
-
-        (
-            title.trim().to_string(),
-            description.map(|s| s.trim().to_string()),
-            icon,
-            image,
-        )
-    };
+    let (title, description, icon, image) = parse_metadata(&html, &url);
 
     Ok(LinkMetadata {
         title,
@@ -116,6 +52,71 @@ async fn fetch_link_metadata(url: String) -> Result<LinkMetadata, String> {
         icon,
         image,
     })
+}
+
+fn parse_metadata(
+    html: &str,
+    url: &str,
+) -> (String, Option<String>, Option<String>, Option<String>) {
+    let document = Html::parse_document(html);
+    let base_url = url::Url::parse(url).ok();
+
+    let resolve_url = |href: &str| -> Option<String> {
+        if href.starts_with("http") {
+            Some(href.to_string())
+        } else if let Some(base) = &base_url {
+            base.join(href).ok().map(|u| u.to_string())
+        } else {
+            None
+        }
+    };
+
+    let title = get_meta_content(&document, "og:title")
+        .or_else(|| get_meta_content(&document, "twitter:title"))
+        .or_else(|| {
+            let selector = Selector::parse("title").ok()?;
+            document
+                .select(&selector)
+                .next()?
+                .text()
+                .collect::<String>()
+                .into()
+        })
+        .unwrap_or_else(|| {
+            base_url
+                .as_ref()
+                .map(|u| u.host_str().unwrap_or("Unknown").to_string())
+                .unwrap_or_else(|| "Unknown".to_string())
+        });
+
+    let description = get_meta_content(&document, "og:description")
+        .or_else(|| get_meta_content(&document, "twitter:description"))
+        .or_else(|| get_meta_name_content(&document, "description"));
+
+    let icon = get_link_href(&document, "apple-touch-icon")
+        .or_else(|| get_link_href(&document, "icon"))
+        .or_else(|| get_link_href(&document, "shortcut icon"))
+        .and_then(|href| resolve_url(&href))
+        .or_else(|| {
+            base_url.as_ref().map(|u| {
+                format!(
+                    "{}://{}/favicon.ico",
+                    u.scheme(),
+                    u.host_str().unwrap_or("")
+                )
+            })
+        });
+
+    let image = get_meta_content(&document, "og:image")
+        .or_else(|| get_meta_content(&document, "twitter:image"))
+        .and_then(|src| resolve_url(&src));
+
+    (
+        title.trim().to_string(),
+        description.map(|s| s.trim().to_string()),
+        icon,
+        image,
+    )
 }
 
 #[tauri::command]
@@ -148,48 +149,15 @@ async fn cache_link(app: tauri::AppHandle, id: String, url: String) -> Result<Ca
     let content_path = link_dir.join("content.html");
     fs::write(&content_path, &html).map_err(|e| format!("Failed to save HTML: {}", e))?;
 
-    // Re-parse for icons/images if we don't have them passed in
-    let (icon_url, image_url) = {
-        let document = Html::parse_document(&html);
-        let base_url = url::Url::parse(&url).ok();
-        let resolve_url = |href: &str| -> Option<String> {
-            if href.starts_with("http") {
-                Some(href.to_string())
-            } else if let Some(base) = &base_url {
-                base.join(href).ok().map(|u| u.to_string())
-            } else {
-                None
-            }
-        };
-
-        let icon_url = get_link_href(&document, "apple-touch-icon")
-            .or_else(|| get_link_href(&document, "icon"))
-            .or_else(|| get_link_href(&document, "shortcut icon"))
-            .and_then(|href| resolve_url(&href))
-            .or_else(|| {
-                base_url.as_ref().map(|u| {
-                    format!(
-                        "{}://{}/favicon.ico",
-                        u.scheme(),
-                        u.host_str().unwrap_or("")
-                    )
-                })
-            });
-
-        let image_url = get_meta_content(&document, "og:image")
-            .or_else(|| get_meta_content(&document, "twitter:image"))
-            .and_then(|src| resolve_url(&src));
-
-        (icon_url, image_url)
-    };
+    let (title, description, icon_url, image_url) = parse_metadata(&html, &url);
 
     // 2. Download and save icon
     let mut icon_local_path = None;
-    if let Some(url) = icon_url {
-        if let Ok(response) = client.get(&url).send().await {
+    if let Some(ref u) = icon_url {
+        if let Ok(response) = client.get(u).send().await {
             if let Ok(bytes) = response.bytes().await {
                 // Determine extension
-                let ext = url
+                let ext = u
                     .split('.')
                     .last()
                     .unwrap_or("png")
@@ -206,10 +174,10 @@ async fn cache_link(app: tauri::AppHandle, id: String, url: String) -> Result<Ca
 
     // 3. Download and save image
     let mut image_local_path = None;
-    if let Some(url) = image_url {
-        if let Ok(response) = client.get(&url).send().await {
+    if let Some(ref u) = image_url {
+        if let Ok(response) = client.get(u).send().await {
             if let Ok(bytes) = response.bytes().await {
-                let ext = url
+                let ext = u
                     .split('.')
                     .last()
                     .unwrap_or("jpg")
@@ -225,6 +193,10 @@ async fn cache_link(app: tauri::AppHandle, id: String, url: String) -> Result<Ca
     }
 
     Ok(CacheResult {
+        title,
+        description,
+        icon: icon_url,
+        image: image_url,
         content_path: content_path.to_string_lossy().to_string(),
         icon_path: icon_local_path,
         image_path: image_local_path,

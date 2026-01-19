@@ -21,11 +21,13 @@ export function LinkCard({ link }: LinkCardProps) {
         !link.title ? link.url : null
     );
 
-    // Use stored data or fetched metadata, prioritizing local cache
+    // Use stored data or fetched metadata
+    // Prioritize remote URLs (icon/image) as they work without protocol-asset
+    // Local paths (localIconPath/localImagePath) are fallbacks when caching is enabled
     const title = link.title || metadata?.title || new URL(link.url).hostname;
     const description = link.description || metadata?.description;
-    const icon = link.localIconPath || link.icon || metadata?.icon || null;
-    const image = link.localImagePath || link.image || metadata?.image || null;
+    const icon = link.icon || metadata?.icon || link.localIconPath || null;
+    const image = link.image || metadata?.image || link.localImagePath || null;
 
     const handleOpenInBrowser = (e?: React.MouseEvent) => {
         e?.stopPropagation();
@@ -81,7 +83,7 @@ export function LinkCard({ link }: LinkCardProps) {
 
     return (
         <article className="link-card" onClick={handleOpen}>
-            {image && (
+            {image ? (
                 <div className="link-card-image">
                     <SmartImage
                         src={image}
@@ -89,6 +91,27 @@ export function LinkCard({ link }: LinkCardProps) {
                         className="link-card-main-image"
                         size={64}
                     />
+                </div>
+            ) : icon ? (
+                <div className="link-card-image link-card-icon-placeholder">
+                    <div className="link-card-icon-blur">
+                        <SmartImage
+                            src={icon}
+                            fallbackSrc={`https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}&sz=64`}
+                            className="link-card-blur-icon"
+                            size={64}
+                        />
+                    </div>
+                    <SmartImage
+                        src={icon}
+                        fallbackSrc={`https://www.google.com/s2/favicons?domain=${new URL(link.url).hostname}&sz=64`}
+                        className="link-card-center-icon"
+                        size={32}
+                    />
+                </div>
+            ) : (
+                <div className="link-card-image link-card-default-placeholder">
+                    <ExternalLinkIcon size={32} className="link-card-placeholder-icon" />
                 </div>
             )}
             <div className="link-card-content">

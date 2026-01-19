@@ -7,7 +7,6 @@ import { useState, useMemo } from "react";
 import { useLinks } from "../hooks/use-links";
 import { LinkCard } from "../components/LinkCard.tsx";
 import { AddLinkButton } from "../components/AddLinkButton.tsx";
-import { RefetchPreviewsButton } from "../components/RefetchPreviewsButton.tsx";
 import { InboxIcon } from "../components/Icons.tsx";
 
 export const Route = createFileRoute("/")({
@@ -64,7 +63,6 @@ function HomePage() {
                     )}
                 </div>
                 <div className="main-topbar-right">
-                    <RefetchPreviewsButton linkIds={filteredLinks.map(l => l.id)} />
                     <AddLinkButton />
                 </div>
             </header>

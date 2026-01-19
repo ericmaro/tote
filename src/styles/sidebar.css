@@ -95,7 +95,6 @@
     min-height: 0;
     overflow-y: auto;
     overflow-x: hidden;
-    -webkit-app-region: no-drag;
     margin-right: calc(-1 * var(--sidebar-padding));
     padding-right: calc(var(--sidebar-padding) - 12px);
     -webkit-mask-repeat: no-repeat;
@@ -542,7 +541,6 @@
     background: var(--surface-card);
     color: var(--text-muted);
     font-size: 11px;
-    -webkit-app-region: no-drag;
 }
 
 .usage-bars {
@@ -595,7 +593,6 @@
 }
 
 .sidebar-corner-actions {
-    -webkit-app-region: no-drag;
     position: absolute;
     left: var(--sidebar-padding);
     bottom: 16px;

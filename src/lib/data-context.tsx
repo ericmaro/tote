@@ -102,34 +102,53 @@ export function DataProvider({ children }: { children: ReactNode }) {
         setCategories((prev) => prev.filter((cat) => cat.id !== id));
     }, []);
 
+    const refreshLinkMetadata = useCallback(async (id: string) => {
+        // We use setLinks with a callback to ensure we have the latest state 
+        // without depending directly on the 'links' variable which might cause excessive rerenders
+        setLinks((prev) => {
+            const link = prev.find(l => l.id === id);
+            if (!link) return prev;
+
+            invoke("cache_link", { id, url: link.url })
+                .then((result: any) => {
+                    setLinks((innerPrev) =>
+                        innerPrev.map((l) =>
+                            l.id === id
+                                ? {
+                                    ...l,
+                                    title: result.title,
+                                    description: result.description,
+                                    icon: result.icon,
+                                    image: result.image,
+                                    cachedContentPath: result.content_path,
+                                    localIconPath: result.icon_path,
+                                    localImagePath: result.image_path,
+                                }
+                                : l
+                        )
+                    );
+                })
+                .catch(err => console.error("Failed to refresh metadata:", err));
+
+            return prev;
+        });
+    }, []);
+
     // Links Actions
     const updateLink = useCallback((id: string, updates: Partial<Link>) => {
         setLinks((prev) => {
             const currentLink = prev.find(l => l.id === id);
             const urlChanged = currentLink && updates.url && updates.url !== currentLink.url;
 
+            const nextState = prev.map((link) => (link.id === id ? { ...link, ...updates } : link));
+
             if (urlChanged) {
-                invoke("cache_link", { id, url: updates.url! })
-                    .then((result: any) => {
-                        setLinks((innerPrev) =>
-                            innerPrev.map((link) =>
-                                link.id === id
-                                    ? {
-                                        ...link,
-                                        cachedContentPath: result.content_path,
-                                        localIconPath: result.icon_path,
-                                        localImagePath: result.image_path,
-                                    }
-                                    : link
-                            )
-                        );
-                    })
-                    .catch(console.error);
+                setTimeout(() => refreshLinkMetadata(id), 0);
             }
 
-            return prev.map((link) => (link.id === id ? { ...link, ...updates } : link));
+            return nextState;
         });
-    }, []);
+    }, [refreshLinkMetadata]);
 
     const addLink = useCallback((link: Omit<Link, "id" | "createdAt">) => {
         const newLink: Link = {
@@ -137,43 +156,19 @@ export function DataProvider({ children }: { children: ReactNode }) {
             id: crypto.randomUUID(),
             createdAt: Date.now(),
         };
+
         setLinks((prev) => [newLink, ...prev]);
 
-        // Trigger caching in background
-        invoke("cache_link", { id: newLink.id, url: newLink.url })
-            .then((result: any) => {
-                updateLink(newLink.id, {
-                    cachedContentPath: result.content_path,
-                    localIconPath: result.icon_path,
-                    localImagePath: result.image_path,
-                });
-            })
-            .catch(console.error);
+        // Trigger caching immediately using the consolidated logic
+        setTimeout(() => refreshLinkMetadata(newLink.id), 50);
 
         return newLink;
-    }, [updateLink]);
+    }, [refreshLinkMetadata]);
 
     const deleteLink = useCallback((id: string) => {
         setLinks((prev) => prev.filter((link) => link.id !== id));
         invoke("remove_cached_link", { id }).catch(console.error);
     }, []);
-
-    const refreshLinkMetadata = useCallback(async (id: string) => {
-        const link = links.find(l => l.id === id);
-        if (!link) return;
-
-        try {
-            const result: any = await invoke("cache_link", { id, url: link.url });
-            updateLink(id, {
-                cachedContentPath: result.content_path,
-                localIconPath: result.icon_path,
-                localImagePath: result.image_path,
-            });
-        } catch (error) {
-            console.error("Failed to refresh metadata:", error);
-            throw error;
-        }
-    }, [links, updateLink]);
 
     const getLinksByCategory = useCallback((categoryId: string) => {
         if (categoryId === "all") return links;

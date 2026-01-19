@@ -30,9 +30,9 @@ export function Sidebar() {
     const isHome = currentPath === "/";
 
     return (
-        <aside className="sidebar">
+        <aside className="sidebar" data-tauri-drag-region>
             {/* Header */}
-            <div className="sidebar-header">
+            <div className="sidebar-header" data-tauri-drag-region>
                 <h1 className="sidebar-title">
                     <FolderIcon size={14} />
                     Categories
