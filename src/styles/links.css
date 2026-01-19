@@ -536,6 +536,40 @@
 }
 
 /* Category Personalization */
+.icon-search {
+    margin-bottom: 8px;
+}
+
+.icon-grid-scroll {
+    max-height: 180px;
+    overflow-y: auto;
+    background: var(--surface-control);
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+    scrollbar-width: thin;
+    scrollbar-color: var(--border-strong) transparent;
+}
+
+.icon-grid-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.icon-grid-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.icon-grid-scroll::-webkit-scrollbar-thumb {
+    background: var(--border-strong);
+    border-radius: 3px;
+}
+
+.icon-grid-full {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    gap: 6px;
+    padding: 10px;
+}
+
 .icon-grid {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -570,6 +604,23 @@
     border-color: var(--border-accent-soft);
 }
 
+/* Color Picker */
+.color-picker-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.color-grid-extended {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    background: var(--surface-control);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+}
+
 .color-grid {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
@@ -597,6 +648,68 @@
 .color-choice.selected {
     border-color: var(--text-strong);
     transform: scale(1.1);
+}
+
+.custom-color-trigger {
+    background: conic-gradient(from 0deg,
+            #ff0000, #ff9900, #ffff00, #00ff00,
+            #00ffff, #0000ff, #9900ff, #ff0000);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.custom-color-trigger.active {
+    border-color: var(--text-strong);
+}
+
+.custom-color-icon {
+    font-size: 14px;
+    font-weight: 700;
+    color: white;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.custom-color-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    background: var(--surface-control);
+    border-radius: 10px;
+    border: 1px solid var(--border-subtle);
+}
+
+.custom-color-input {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    background: transparent;
+}
+
+.custom-color-input::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+.custom-color-input::-webkit-color-swatch {
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+}
+
+.custom-color-text {
+    flex: 1;
+    font-family: monospace;
+}
+
+.color-preview {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    border: 1px solid var(--border-strong);
+    flex-shrink: 0;
 }
 
 /* Sidebar edit trigger */

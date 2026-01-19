@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "tote",
+  "productName": "Tote",
   "version": "0.1.0",
   "identifier": "com.ericmaro.tote",
   "build": {

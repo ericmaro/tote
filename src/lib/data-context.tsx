@@ -2,6 +2,7 @@ import { createContext, useContext, useState, useEffect, useCallback, ReactNode,
 import { Link, Category, DEFAULT_CATEGORIES } from "./types";
 import { getStorage, setStorage } from "./store";
 import { invoke } from "@tauri-apps/api/core";
+import { useTrayEvents } from "../hooks/use-tray-events";
 
 const CATEGORIES_KEY = "tote-categories";
 const LINKS_KEY = "tote-links";
@@ -178,6 +179,25 @@ export function DataProvider({ children }: { children: ReactNode }) {
     const recentLinks = useMemo(() => {
         return [...links].sort((a, b) => b.createdAt - a.createdAt).slice(0, 20);
     }, [links]);
+
+    // Handle system tray "Add Link from Clipboard" events
+    const handleTrayAddLink = useCallback((url: string) => {
+        // Get the first non-"all" category
+        const defaultCategory = categories.find(c => c.id !== "all");
+        const categoryId = defaultCategory?.id || "personal";
+
+        addLink({
+            url,
+            title: new URL(url).hostname,
+            description: null,
+            icon: null,
+            image: null,
+            categoryId,
+            tags: [],
+        });
+    }, [categories, addLink]);
+
+    useTrayEvents({ onAddLink: handleTrayAddLink });
 
     return (
         <DataContext.Provider value={{
